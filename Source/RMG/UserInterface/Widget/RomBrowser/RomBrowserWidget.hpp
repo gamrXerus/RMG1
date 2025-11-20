@@ -61,6 +61,13 @@ class RomBrowserWidget : public QWidget
 
     QMap<QString, CoreRomSettings> GetModelData(void);
 
+    // Gamepad navigation methods
+    void NavigateUp(void);
+    void NavigateDown(void);
+    void NavigateLeft(void);
+    void NavigateRight(void);
+    void ActivateCurrentItem(void);
+
   private:
     QStackedWidget* stackedWidget = nullptr;
     Widget::RomBrowserEmptyWidget*    emptyWidget    = nullptr;

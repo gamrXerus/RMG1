@@ -12,6 +12,7 @@
 
 #include "Thread/EmulationThread.hpp"
 #include "EventFilter.hpp"
+#include "GamepadHandler.hpp"
 #include "Callbacks.hpp"
 
 #include "Widget/RomBrowser/RomBrowserWidget.hpp"
@@ -60,6 +61,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     Widget::VKWidget    *ui_Widget_Vulkan          = nullptr;
     Widget::RomBrowserWidget *ui_Widget_RomBrowser = nullptr;
     EventFilter *ui_EventFilter                    = nullptr;
+    GamepadHandler *ui_GamepadHandler              = nullptr;
     QLabel *ui_StatusBar_Label                     = nullptr;
     QLabel *ui_StatusBar_RenderModeLabel           = nullptr;
 
@@ -173,6 +175,13 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_EventFilter_KeyPressed(QKeyEvent *event);
     void on_EventFilter_KeyReleased(QKeyEvent *event);
     void on_EventFilter_FileDropped(QDropEvent *event);
+
+    void on_GamepadHandler_DpadUpPressed(void);
+    void on_GamepadHandler_DpadDownPressed(void);
+    void on_GamepadHandler_DpadLeftPressed(void);
+    void on_GamepadHandler_DpadRightPressed(void);
+    void on_GamepadHandler_ButtonCrossPressed(void);
+    void on_GamepadHandler_ButtonGuidePressed(void);
 
     void on_QGuiApplication_applicationStateChanged(Qt::ApplicationState state);
  

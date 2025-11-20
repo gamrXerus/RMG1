@@ -239,6 +239,8 @@ void MainWindow::initializeUI(bool launchROM)
     this->ui_Widget_Dummy = new Widget::DummyWidget(this);
 
     this->ui_EventFilter = new EventFilter(this);
+    this->ui_GamepadHandler = new GamepadHandler(this);
+    this->ui_GamepadHandler->Init();
     this->ui_StatusBar_Label = new QLabel(this);
     this->ui_StatusBar_RenderModeLabel = new QLabel(this);
 
@@ -277,6 +279,19 @@ void MainWindow::initializeUI(bool launchROM)
             &MainWindow::on_EventFilter_KeyReleased);
     connect(this->ui_EventFilter, &EventFilter::on_EventFilter_FileDropped, this,
             &MainWindow::on_EventFilter_FileDropped);
+
+    connect(this->ui_GamepadHandler, &GamepadHandler::DpadUpPressed, this,
+            &MainWindow::on_GamepadHandler_DpadUpPressed);
+    connect(this->ui_GamepadHandler, &GamepadHandler::DpadDownPressed, this,
+            &MainWindow::on_GamepadHandler_DpadDownPressed);
+    connect(this->ui_GamepadHandler, &GamepadHandler::DpadLeftPressed, this,
+            &MainWindow::on_GamepadHandler_DpadLeftPressed);
+    connect(this->ui_GamepadHandler, &GamepadHandler::DpadRightPressed, this,
+            &MainWindow::on_GamepadHandler_DpadRightPressed);
+    connect(this->ui_GamepadHandler, &GamepadHandler::ButtonCrossPressed, this,
+            &MainWindow::on_GamepadHandler_ButtonCrossPressed);
+    connect(this->ui_GamepadHandler, &GamepadHandler::ButtonGuidePressed, this,
+            &MainWindow::on_GamepadHandler_ButtonGuidePressed);
 }
 
 void MainWindow::configureUI(QApplication* app, bool showUI)
@@ -1461,6 +1476,60 @@ void MainWindow::on_EventFilter_KeyReleased(QKeyEvent *event)
     int mod = Utilities::QtModKeyToSdl3ModKey(event->modifiers());
 
     CoreSetKeyUp(key, mod);
+}
+
+void MainWindow::on_GamepadHandler_DpadUpPressed(void)
+{
+    // Only handle D-pad when not in emulation (in ROM browser)
+    if (!CoreIsEmulationRunning() && this->ui_Widget_RomBrowser != nullptr)
+    {
+        this->ui_Widget_RomBrowser->NavigateUp();
+    }
+}
+
+void MainWindow::on_GamepadHandler_DpadDownPressed(void)
+{
+    // Only handle D-pad when not in emulation (in ROM browser)
+    if (!CoreIsEmulationRunning() && this->ui_Widget_RomBrowser != nullptr)
+    {
+        this->ui_Widget_RomBrowser->NavigateDown();
+    }
+}
+
+void MainWindow::on_GamepadHandler_DpadLeftPressed(void)
+{
+    // Only handle D-pad when not in emulation (in ROM browser)
+    if (!CoreIsEmulationRunning() && this->ui_Widget_RomBrowser != nullptr)
+    {
+        this->ui_Widget_RomBrowser->NavigateLeft();
+    }
+}
+
+void MainWindow::on_GamepadHandler_DpadRightPressed(void)
+{
+    // Only handle D-pad when not in emulation (in ROM browser)
+    if (!CoreIsEmulationRunning() && this->ui_Widget_RomBrowser != nullptr)
+    {
+        this->ui_Widget_RomBrowser->NavigateRight();
+    }
+}
+
+void MainWindow::on_GamepadHandler_ButtonCrossPressed(void)
+{
+    // Only handle Cross button when not in emulation (in ROM browser)
+    if (!CoreIsEmulationRunning() && this->ui_Widget_RomBrowser != nullptr)
+    {
+        this->ui_Widget_RomBrowser->ActivateCurrentItem();
+    }
+}
+
+void MainWindow::on_GamepadHandler_ButtonGuidePressed(void)
+{
+    // Only handle Guide button when in emulation to shutdown the game
+    if (CoreIsEmulationRunning())
+    {
+        this->on_Action_System_Shutdown();
+    }
 }
 
 void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)

@@ -67,6 +67,7 @@ set(RMG_SOURCES
     UserInterface/Dialog/LogDialog.ui
     UserInterface/NoFocusDelegate.cpp
     UserInterface/EventFilter.cpp
+    UserInterface/GamepadHandler.cpp
     UserInterface/UIResources.rc
     UserInterface/UIResources.qrc
     Thread/RomSearcherThread.cpp
@@ -139,7 +140,7 @@ target_include_directories(RMG PRIVATE
     ${IMGUI_DIR}
 )
 
-target_link_libraries(RMG Qt6::Gui Qt6::Widgets)
+target_link_libraries(RMG Qt6::Gui Qt6::Widgets SDL3::SDL3)
 
 if (NOT WIN32)
     target_link_libraries(RMG Qt6::DBus)

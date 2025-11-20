@@ -19,6 +19,8 @@
 #include <vector>
 #include <QList>
 #include <QDir>
+#include <QKeyEvent>
+#include <QCoreApplication>
 
 #include <RMG-Core/Directories.hpp>
 #include <RMG-Core/SaveState.hpp>
@@ -1292,4 +1294,174 @@ void RomBrowserWidget::on_Action_RemoveCoverImage(void)
     item->setIcon(this->getCurrentCover(data.file, data.header, data.settings, coverFile));
     data.coverFile = coverFile;
     item->setData(QVariant::fromValue<RomBrowserModelData>(data));
+}
+
+//
+// Gamepad Navigation Methods
+//
+
+void RomBrowserWidget::NavigateUp(void)
+{
+    QAbstractItemView* view = this->getCurrentModelView();
+    if (view == nullptr)
+    {
+        return;
+    }
+
+    QPair<QStandardItemModel*, QSortFilterProxyModel*> model = this->getCurrentModel();
+    if (model.second == nullptr)
+    {
+        return;
+    }
+
+    QModelIndex currentIndex = view->currentIndex();
+    if (!currentIndex.isValid())
+    {
+        // No selection, select first item
+        if (model.second->rowCount() > 0)
+        {
+            view->setCurrentIndex(model.second->index(0, 0));
+        }
+        return;
+    }
+
+    // For list view: move up one row
+    // For grid view: find the item above in the grid layout
+    if (this->currentViewWidget == this->listViewWidget)
+    {
+        // List view: simple row navigation
+        int newRow = currentIndex.row() - 1;
+        if (newRow >= 0)
+        {
+            QModelIndex newIndex = model.second->index(newRow, currentIndex.column());
+            view->setCurrentIndex(newIndex);
+        }
+    }
+    else
+    {
+        // Grid view: simulate up key press for proper grid navigation
+        QKeyEvent event(QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier);
+        QCoreApplication::sendEvent(view, &event);
+    }
+}
+
+void RomBrowserWidget::NavigateDown(void)
+{
+    QAbstractItemView* view = this->getCurrentModelView();
+    if (view == nullptr)
+    {
+        return;
+    }
+
+    QPair<QStandardItemModel*, QSortFilterProxyModel*> model = this->getCurrentModel();
+    if (model.second == nullptr)
+    {
+        return;
+    }
+
+    QModelIndex currentIndex = view->currentIndex();
+    if (!currentIndex.isValid())
+    {
+        // No selection, select first item
+        if (model.second->rowCount() > 0)
+        {
+            view->setCurrentIndex(model.second->index(0, 0));
+        }
+        return;
+    }
+
+    // For list view: move down one row
+    // For grid view: find the item below in the grid layout
+    if (this->currentViewWidget == this->listViewWidget)
+    {
+        // List view: simple row navigation
+        int newRow = currentIndex.row() + 1;
+        if (newRow < model.second->rowCount())
+        {
+            QModelIndex newIndex = model.second->index(newRow, currentIndex.column());
+            view->setCurrentIndex(newIndex);
+        }
+    }
+    else
+    {
+        // Grid view: simulate down key press for proper grid navigation
+        QKeyEvent event(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier);
+        QCoreApplication::sendEvent(view, &event);
+    }
+}
+
+void RomBrowserWidget::NavigateLeft(void)
+{
+    QAbstractItemView* view = this->getCurrentModelView();
+    if (view == nullptr)
+    {
+        return;
+    }
+
+    QPair<QStandardItemModel*, QSortFilterProxyModel*> model = this->getCurrentModel();
+    if (model.second == nullptr)
+    {
+        return;
+    }
+
+    QModelIndex currentIndex = view->currentIndex();
+    if (!currentIndex.isValid())
+    {
+        // No selection, select first item
+        if (model.second->rowCount() > 0)
+        {
+            view->setCurrentIndex(model.second->index(0, 0));
+        }
+        return;
+    }
+
+    // Grid view: simulate left key press for proper grid navigation
+    QKeyEvent event(QEvent::KeyPress, Qt::Key_Left, Qt::NoModifier);
+    QCoreApplication::sendEvent(view, &event);
+}
+
+void RomBrowserWidget::NavigateRight(void)
+{
+    QAbstractItemView* view = this->getCurrentModelView();
+    if (view == nullptr)
+    {
+        return;
+    }
+
+    QPair<QStandardItemModel*, QSortFilterProxyModel*> model = this->getCurrentModel();
+    if (model.second == nullptr)
+    {
+        return;
+    }
+
+    QModelIndex currentIndex = view->currentIndex();
+    if (!currentIndex.isValid())
+    {
+        // No selection, select first item
+        if (model.second->rowCount() > 0)
+        {
+            view->setCurrentIndex(model.second->index(0, 0));
+        }
+        return;
+    }
+
+    // Grid view: simulate right key press for proper grid navigation
+    QKeyEvent event(QEvent::KeyPress, Qt::Key_Right, Qt::NoModifier);
+    QCoreApplication::sendEvent(view, &event);
+}
+
+void RomBrowserWidget::ActivateCurrentItem(void)
+{
+    QAbstractItemView* view = this->getCurrentModelView();
+    if (view == nullptr)
+    {
+        return;
+    }
+
+    QModelIndex currentIndex = view->currentIndex();
+    if (currentIndex.isValid())
+    {
+        // Trigger the same action as double-clicking
+        this->on_DoubleClicked(currentIndex);
+    }
 }
