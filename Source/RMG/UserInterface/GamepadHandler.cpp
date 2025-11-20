@@ -33,8 +33,8 @@ bool GamepadHandler::Init(void)
         return false;
     }
 
-    // Open the first available gamepad
-    openFirstGamepad();
+    // Open all available gamepads
+    openAllGamepads();
 
     // Create timer to poll gamepad state
     pollTimer = new QTimer(this);
@@ -59,33 +59,45 @@ void GamepadHandler::Shutdown(void)
         pollTimer = nullptr;
     }
 
-    if (gamepad != nullptr)
+    // Close all gamepads
+    for (auto it = gamepads.begin(); it != gamepads.end(); ++it)
     {
-        SDL_CloseGamepad(gamepad);
-        gamepad = nullptr;
+        if (it.value() != nullptr)
+        {
+            SDL_CloseGamepad(it.value());
+        }
     }
+    gamepads.clear();
+    gamepadStates.clear();
 
     SDL_QuitSubSystem(SDL_INIT_GAMEPAD);
     initialized = false;
 }
 
-void GamepadHandler::openFirstGamepad(void)
+void GamepadHandler::openAllGamepads(void)
 {
-    // Close any existing gamepad
-    if (gamepad != nullptr)
-    {
-        SDL_CloseGamepad(gamepad);
-        gamepad = nullptr;
-    }
-
     // Get list of gamepads
     int count = 0;
     SDL_JoystickID* joysticks = SDL_GetGamepads(&count);
 
     if (joysticks != nullptr && count > 0)
     {
-        // Open the first gamepad
-        gamepad = SDL_OpenGamepad(joysticks[0]);
+        // Open all gamepads
+        for (int i = 0; i < count; i++)
+        {
+            SDL_JoystickID id = joysticks[i];
+
+            // Only open if not already opened
+            if (!gamepads.contains(id))
+            {
+                SDL_Gamepad* pad = SDL_OpenGamepad(id);
+                if (pad != nullptr)
+                {
+                    gamepads[id] = pad;
+                    gamepadStates[id] = GamepadState();
+                }
+            }
+        }
         SDL_free(joysticks);
     }
 }
@@ -98,81 +110,86 @@ void GamepadHandler::on_PollTimer_Timeout(void)
     {
         if (event.type == SDL_EVENT_GAMEPAD_ADDED)
         {
-            // A gamepad was connected
-            if (gamepad == nullptr)
-            {
-                openFirstGamepad();
-            }
+            // A gamepad was connected - open all gamepads to include the new one
+            openAllGamepads();
         }
         else if (event.type == SDL_EVENT_GAMEPAD_REMOVED)
         {
             // A gamepad was disconnected
-            if (gamepad != nullptr && event.gdevice.which == SDL_GetJoystickID(SDL_GetGamepadJoystick(gamepad)))
+            SDL_JoystickID removedId = event.gdevice.which;
+            if (gamepads.contains(removedId))
             {
-                SDL_CloseGamepad(gamepad);
-                gamepad = nullptr;
-                // Try to open another gamepad if available
-                openFirstGamepad();
+                SDL_CloseGamepad(gamepads[removedId]);
+                gamepads.remove(removedId);
+                gamepadStates.remove(removedId);
             }
         }
     }
 
-    // Poll gamepad state
-    pollGamepad();
+    // Poll all gamepads
+    for (auto it = gamepads.begin(); it != gamepads.end(); ++it)
+    {
+        if (it.value() != nullptr)
+        {
+            pollGamepad(it.value(), it.key());
+        }
+    }
 }
 
-void GamepadHandler::pollGamepad(void)
+void GamepadHandler::pollGamepad(SDL_Gamepad* gamepad, SDL_JoystickID id)
 {
-    if (gamepad == nullptr)
+    if (gamepad == nullptr || !gamepadStates.contains(id))
     {
         return;
     }
 
+    GamepadState& state = gamepadStates[id];
+
     // D-pad Up
     bool dpadUp = SDL_GetGamepadButton(gamepad, SDL_GAMEPAD_BUTTON_DPAD_UP);
-    if (dpadUp && !lastDpadUp)
+    if (dpadUp && !state.lastDpadUp)
     {
         emit DpadUpPressed();
     }
-    lastDpadUp = dpadUp;
+    state.lastDpadUp = dpadUp;
 
     // D-pad Down
     bool dpadDown = SDL_GetGamepadButton(gamepad, SDL_GAMEPAD_BUTTON_DPAD_DOWN);
-    if (dpadDown && !lastDpadDown)
+    if (dpadDown && !state.lastDpadDown)
     {
         emit DpadDownPressed();
     }
-    lastDpadDown = dpadDown;
+    state.lastDpadDown = dpadDown;
 
     // D-pad Left
     bool dpadLeft = SDL_GetGamepadButton(gamepad, SDL_GAMEPAD_BUTTON_DPAD_LEFT);
-    if (dpadLeft && !lastDpadLeft)
+    if (dpadLeft && !state.lastDpadLeft)
     {
         emit DpadLeftPressed();
     }
-    lastDpadLeft = dpadLeft;
+    state.lastDpadLeft = dpadLeft;
 
     // D-pad Right
     bool dpadRight = SDL_GetGamepadButton(gamepad, SDL_GAMEPAD_BUTTON_DPAD_RIGHT);
-    if (dpadRight && !lastDpadRight)
+    if (dpadRight && !state.lastDpadRight)
     {
         emit DpadRightPressed();
     }
-    lastDpadRight = dpadRight;
+    state.lastDpadRight = dpadRight;
 
     // Cross button (X on PS4, A on Xbox)
     bool buttonCross = SDL_GetGamepadButton(gamepad, SDL_GAMEPAD_BUTTON_SOUTH);
-    if (buttonCross && !lastButtonCross)
+    if (buttonCross && !state.lastButtonCross)
     {
         emit ButtonCrossPressed();
     }
-    lastButtonCross = buttonCross;
+    state.lastButtonCross = buttonCross;
 
     // Guide button (PlayStation button on PS4, Xbox button on Xbox)
     bool buttonGuide = SDL_GetGamepadButton(gamepad, SDL_GAMEPAD_BUTTON_GUIDE);
-    if (buttonGuide && !lastButtonGuide)
+    if (buttonGuide && !state.lastButtonGuide)
     {
         emit ButtonGuidePressed();
     }
-    lastButtonGuide = buttonGuide;
+    state.lastButtonGuide = buttonGuide;
 }

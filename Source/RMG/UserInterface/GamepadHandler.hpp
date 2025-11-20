@@ -12,6 +12,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QMap>
 #include <SDL3/SDL.h>
 
 namespace UserInterface
@@ -29,19 +30,22 @@ class GamepadHandler : public QObject
 
   private:
     QTimer* pollTimer = nullptr;
-    SDL_Gamepad* gamepad = nullptr;
+    QMap<SDL_JoystickID, SDL_Gamepad*> gamepads;
     bool initialized = false;
 
-    // Button state tracking to detect press events
-    bool lastDpadUp = false;
-    bool lastDpadDown = false;
-    bool lastDpadLeft = false;
-    bool lastDpadRight = false;
-    bool lastButtonCross = false;
-    bool lastButtonGuide = false;
+    // Button state tracking to detect press events for each gamepad
+    struct GamepadState {
+        bool lastDpadUp = false;
+        bool lastDpadDown = false;
+        bool lastDpadLeft = false;
+        bool lastDpadRight = false;
+        bool lastButtonCross = false;
+        bool lastButtonGuide = false;
+    };
+    QMap<SDL_JoystickID, GamepadState> gamepadStates;
 
-    void pollGamepad(void);
-    void openFirstGamepad(void);
+    void pollGamepad(SDL_Gamepad* gamepad, SDL_JoystickID id);
+    void openAllGamepads(void);
 
   private slots:
     void on_PollTimer_Timeout(void);
