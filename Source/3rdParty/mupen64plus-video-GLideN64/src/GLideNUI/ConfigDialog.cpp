@@ -501,13 +501,12 @@ void ConfigDialog::setIniPath(const QString & _strIniPath, const QString & _strS
 
 #ifdef M64P_GLIDENUI
 	if (translationFiles.empty())
-		ui->userInterfaceGroupBox->hide();
-	else
-#endif
 	{
-		ui->verticalLayout_4->removeItem(ui->userInterfaceSpacer);
-		delete ui->userInterfaceSpacer;
+		ui->userInterfaceGroupBox->hide();
+		QSpacerItem* verticalSpacer = new QSpacerItem(20, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+		ui->verticalLayout_4->addItem(verticalSpacer);
 	}
+#endif
 
 	const QString currentTranslation = getTranslationFile();
 	int listIndex = 0;
