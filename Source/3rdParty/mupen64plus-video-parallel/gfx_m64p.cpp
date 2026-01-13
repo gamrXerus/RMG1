@@ -71,6 +71,10 @@ m64p_handle configVideoParallel = NULL;
 uint32_t rdram_size;
 static ptr_PluginGetVersion CoreGetVersion = NULL;
 
+static int initialWidth = 0;
+static int initialHeight = 0;
+static bool initialSizeSet = false;
+
 void plugin_init(void)
 {
     CoreGetVersion = (ptr_PluginGetVersion)DLSYM(CoreLibHandle, "PluginGetVersion");
@@ -268,6 +272,13 @@ extern "C"
 
         return M64ERR_SUCCESS;
     }
+
+    EXPORT void CALL SetInitialVideoSize(int width, int height)
+    {
+        initialWidth = width;
+        initialHeight = height;
+        initialSizeSet = true;
+    }
 }
 #endif // CONFIG_GUI
 
@@ -326,6 +337,12 @@ EXPORT int CALL RomOpen(void)
         vk_ssreadbacks = 0; // can cause desyncs
     }
 
+    if (initialSizeSet)
+    {
+        window_width = initialWidth;
+        window_height = initialHeight;
+    }
+
     plugin_init();
 
     if (vk_init())
@@ -347,6 +364,8 @@ EXPORT void CALL RomClosed(void)
     {
         vk_destroy();
     }
+
+    initialSizeSet = false;
 }
 
 EXPORT void CALL ShowCFB(void)
