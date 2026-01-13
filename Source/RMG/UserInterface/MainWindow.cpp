@@ -801,6 +801,8 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool re
         this->ui_ShowStatusbar = CoreSettingsGetBoolValue(SettingsID::GUI_StatusBar);
     }
 
+    this->emulationThread->SetVideoSize(this->ui_Widgets->width() * this->devicePixelRatio(),
+                                        this->ui_Widgets->height() * this->devicePixelRatio());
     this->emulationThread->SetRomFile(cartRom);
     this->emulationThread->SetDiskFile(diskRom);
     this->emulationThread->start();
@@ -2366,7 +2368,6 @@ void MainWindow::on_NetplaySessionDialog_rejected()
 void MainWindow::on_VidExt_Init(VidExtRenderMode renderMode)
 {
     this->ui_VidExtRenderMode   = renderMode;
-    this->ui_VidExtForceSetMode = true;
 
     if (CoreSettingsGetBoolValue(SettingsID::GUI_OpenGLES))
     {
@@ -2553,12 +2554,9 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
         height += this->statusBar()->height();
     }
 
-    if (!this->ui_VidExtForceSetMode)
+    if (this->size() == QSize(width, height))
     {
-        if (this->size() == QSize(width, height))
-        {
-            return;
-        }
+        return;
     }
 
     if (this->isMaximized() || this->isMinimized())
@@ -2567,10 +2565,6 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     }
 
     this->resize(width, height);
-
-    // we've force set the size once,
-    // we can safely disable it now
-    this->ui_VidExtForceSetMode = false;
 }
 
 void MainWindow::on_VidExt_ToggleFS(bool fullscreen)

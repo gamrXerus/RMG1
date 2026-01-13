@@ -42,6 +42,11 @@ void VKWidget::resizeEvent(QResizeEvent *event)
         return;
     }
 
+    if (event->oldSize() == event->size())
+    {
+        return;
+    }
+
     if (this->timerId != 0)
     {
         this->killTimer(this->timerId);

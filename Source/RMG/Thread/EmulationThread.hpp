@@ -16,6 +16,7 @@
 #include <QSurfaceFormat>
 #include <QString>
 #include <QThread>
+#include <QSize>
 
 enum class VidExtRenderMode
 {
@@ -37,6 +38,7 @@ class EmulationThread : public QThread
     void SetRomFile(QString);
     void SetDiskFile(QString);
     void SetNetplay(QString address, int port, int player);
+    void SetVideoSize(int width, int height);
 
     void run(void) override;
 
@@ -46,6 +48,7 @@ class EmulationThread : public QThread
     QString address;
     int port   = -1;
     int player = -1;
+    QSize videoSize;
 #ifndef _WIN32
     uint32_t dbusCookieId = 0;
     QDBusInterface* dbusInterface = nullptr;

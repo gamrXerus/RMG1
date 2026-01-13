@@ -10,6 +10,7 @@
 #include "EmulationThread.hpp"
 
 #include <RMG-Core/Emulation.hpp>
+#include <RMG-Core/Plugins.hpp>
 #include <RMG-Core/Error.hpp>
 
 #ifdef _WIN32
@@ -54,11 +55,18 @@ void EmulationThread::SetNetplay(QString address, int port, int player)
     this->player  = player;
 }
 
+void EmulationThread::SetVideoSize(int width, int height)
+{
+    this->videoSize = QSize(width, height);
+}
+
 void EmulationThread::run(void)
 {
     this->inhibitScreensaver();
 
     emit this->on_Emulation_Started();
+
+    CoreSetInitialVideoSize(this->videoSize.width(), this->videoSize.height());
 
     bool ret = CoreStartEmulation(this->rom.toStdU32String(), this->disk.toStdU32String(), 
                                   this->address.toStdString(), this->port, this->player);

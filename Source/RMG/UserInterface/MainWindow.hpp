@@ -70,7 +70,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     bool ui_HideCursorInEmulation = false;
     bool ui_HideCursorInFullscreenEmulation = false;
     bool ui_NoSwitchToRomBrowser = false;
-    bool ui_VidExtForceSetMode   = false;
     bool ui_LaunchInFullscreen   = false;
     bool ui_QuitAfterEmulation   = false;
     bool ui_RefreshRomListAfterEmulation = false;
