@@ -57,6 +57,11 @@ EXPORT void CALL SetRenderingCallback(void (*callback)(int))
 	api().SetRenderingCallback(callback);
 }
 
+EXPORT void CALL SetInitialVideoSize(int width, int height)
+{
+	api().SetInitialVideoSize(width, height);
+}
+
 EXPORT void CALL ResizeVideoOutput(int width, int height)
 {
 	api().ResizeVideoOutput(width, height);

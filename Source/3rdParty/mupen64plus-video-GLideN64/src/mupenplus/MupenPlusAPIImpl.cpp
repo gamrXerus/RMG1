@@ -166,6 +166,13 @@ void PluginAPI::SetRenderingCallback(void (*callback)(int))
 	renderCallback = callback;
 }
 
+#ifdef M64P_GLIDENUI
+void PluginAPI::SetInitialVideoSize(int width, int height)
+{
+	dwnd().setInitialWindowSize(width, height);
+}
+#endif
+
 void PluginAPI::ResizeVideoOutput(int _Width, int _Height)
 {
 	dwnd().setWindowSize(_Width, _Height);

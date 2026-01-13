@@ -110,6 +110,11 @@ void DisplayWindow::closeWindow()
 	m_bToggleFullscreen = false;
 }
 
+void DisplayWindow::setInitialWindowSize(u32 width, u32 height)
+{
+	m_initialWidth = width;
+	m_initialHeight = height;
+}
 
 void DisplayWindow::setWindowSize(u32 _width, u32 _height)
 {

@@ -17,6 +17,7 @@ public:
 	bool changeWindow();
 	bool resizeWindow();
 	void closeWindow();
+	void setInitialWindowSize(u32 width, u32 height);
 	void setWindowSize(u32 _width, u32 _height);
 	void setCaptureScreen(const char * const _strDirectory);
 	void setToggleFullscreen() { m_bToggleFullscreen = true; }
@@ -55,6 +56,8 @@ protected:
 	bool m_bAdjustScreen = false;
 
 	u32 m_buffersSwapCount = 0;
+	u32 m_initialWidth = 0;
+	u32 m_initialHeight = 0;
 	u32 m_width = 0;
 	u32 m_height = 0;
 	u32 m_heightOffset = 0;

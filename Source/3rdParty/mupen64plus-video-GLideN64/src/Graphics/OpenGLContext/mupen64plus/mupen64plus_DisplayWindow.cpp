@@ -90,8 +90,8 @@ bool DisplayWindowMupen64plus::_start()
 	_setAttributes();
 
 	m_bFullscreen = config.video.fullscreen > 0;
-	m_screenWidth = config.video.windowedWidth;
-	m_screenHeight = config.video.windowedHeight;
+	m_screenWidth = m_initialWidth > 0 ? m_initialWidth : config.video.windowedWidth;
+	m_screenHeight = m_initialHeight > 0 ? m_initialHeight : config.video.windowedHeight;
 	m_screenRefresh = config.video.fullscreenRefresh;
 
 	_getDisplaySize();

@@ -80,6 +80,9 @@ public:
 	void FBGetFrameBufferInfo(void *pinfo);
 #else
 	// MupenPlus
+#ifdef M64P_GLIDENUI
+	void SetInitialVideoSize(int width, int height);
+#endif
 	void ResizeVideoOutput(int _Width, int _Height);
 	void ReadScreen2(void * _dest, int * _width, int * _height, int _front);
 
