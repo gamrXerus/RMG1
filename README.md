@@ -7,7 +7,7 @@ It offers a simple-to-use user interface.
 ## Download
 
 #### Windows
-You can download Rosalie's Mupen GUI on ![Github Releases](https://github.com/Rosalie241/RMG/releases)
+You can download Rosalie's Mupen GUI on [Github Releases](https://github.com/Rosalie241/RMG/releases)
 
 #### Linux
 You can download Rosalie's Mupen GUI on 
@@ -18,9 +18,7 @@ You can download Rosalie's Mupen GUI on
 
 ## Support
 
-You can ask for help or report issues on
-* [Github](https://github.com/Rosalie241/RMG/issues/new)
-* [Discord](https://discord.gg/k9GuyJ2PpF)
+You can ask for help or report issues on [Github](https://github.com/Rosalie241/RMG/issues/new)
 
 ## License
 
